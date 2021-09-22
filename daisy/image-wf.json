@@ -26,7 +26,7 @@
                     "Disks": [{"Source": "disk-install"}],
                     "MachineType": "n1-standard-1",
                     "StartupScript": "custom.sh",
-                    "Metadata": {"ansible_git_repo": "${ansibleGitRepo"}
+                    "Metadata": {"ansible_git_repo": "${ansibleGitRepo}"}
                 }
             ]
         },

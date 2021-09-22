@@ -72,11 +72,12 @@ function get_ansible() {
 }
 
 function run_ansible() {
-  ${MV} "${ANS_ETC_DIR}/hosts" "${ANS_ETC_DIR}/hosts.bak"
-  ${MV} "${ANS_ETC_DIR}/roles" "${ANS_ETC_DIR}/roles.bak"
-  ${LN} -s ${ANSIBLE_DIR}/ansible/roles/ ${ANS_ETC_DIR}/roles
-  ${LN} -s ${ANSIBLE_DIR}/ansible/hosts ${ANS_ETC_DIR}/hosts
-  ${ANSIBLE_PLAYBOOK} "${ANSIBLE_DIR}/ansible/playbooks/gce.yaml"
+  ${MKDIR} -p ${ANS_ETC_DIR}
+  # ${MV} "${ANS_ETC_DIR}/hosts" "${ANS_ETC_DIR}/hosts.bak"
+  # ${MV} "${ANS_ETC_DIR}/roles" "${ANS_ETC_DIR}/roles.bak"
+  ${LN} -s ${ANSIBLE_DIR}/roles/ ${ANS_ETC_DIR}/roles
+  ${LN} -s ${ANSIBLE_DIR}/hosts ${ANS_ETC_DIR}/hosts
+  ${ANSIBLE_PLAYBOOK} "${ANSIBLE_DIR}/playbooks/gce.yaml"
 
   # if ! ${ANSIBLE_PLAYBOOK} "${ANSIBLE_DIR}/playbooks/${VM_NAME}.yaml"; then
   #   echo "bootstrapped failed, will not set the metadata for a successful \
