@@ -33,7 +33,6 @@ if [ "${DISTRO}" == "Debian" ]; then
   GIT_PKG="git"
 fi
 
-
 function install_pkg() {
   local pkg_name=$1
   if [ "${DISTRO}" == "Debian" ]; then
@@ -66,9 +65,9 @@ function get_ansible() {
   fi
 
   # Create metadata to mark ansible repo creation
-#   echo "${ANSIBLE_DIR} cloned successfully, adding metadata"
-#   ${GCLOUD} compute instances add-metadata "${VM_NAME}" \
-#     --zone "${VM_ZONE}" --metadata ansible_repo_ready=true
+  #   echo "${ANSIBLE_DIR} cloned successfully, adding metadata"
+  #   ${GCLOUD} compute instances add-metadata "${VM_NAME}" \
+  #     --zone "${VM_ZONE}" --metadata ansible_repo_ready=true
 }
 
 function run_ansible() {
@@ -77,22 +76,26 @@ function run_ansible() {
   # ${MV} "${ANS_ETC_DIR}/roles" "${ANS_ETC_DIR}/roles.bak"
   ${LN} -s ${ANSIBLE_DIR}/roles/ ${ANS_ETC_DIR}/roles
   ${LN} -s ${ANSIBLE_DIR}/hosts ${ANS_ETC_DIR}/hosts
-  ${ANSIBLE_PLAYBOOK} "${ANSIBLE_DIR}/playbooks/gce.yaml"
+  # ${ANSIBLE_PLAYBOOK} "${ANSIBLE_DIR}/playbooks/gce.yaml"
 
-  # if ! ${ANSIBLE_PLAYBOOK} "${ANSIBLE_DIR}/playbooks/${VM_NAME}.yaml"; then
-  #   echo "bootstrapped failed, will not set the metadata for a successful \
-  #     bootstap"
-  #   return 1
-  # else
-  #   echo "bootstrapped succeeed, adding metadata"
-  #   ${GCLOUD} compute instances add-metadata "${VM_NAME}" \
-  #     --zone "${VM_ZONE}" --metadata bootstrapped=true
-  #   return 0
-  # fi
+  if ! ${ANSIBLE_PLAYBOOK} "${ANSIBLE_DIR}/playbooks/gce.yaml"; then
+    echo "bootstrapped failed"
+    return 1
+  else
+    echo "bootstrapped succeeed"
+    # ${GCLOUD} compute instances add-metadata "${VM_NAME}" \
+    #   --zone "${VM_ZONE}" --metadata bootstrapped=true
+    return 0
+  fi
 }
 
 ${APT} update
 ${APT} upgrade -y
 get_ansible
-run_ansible
-${SYSTEMCTL} poweroff
+if ! run_ansible; then
+    echo "bootstrapped failed, not powering off for troubleshooting"
+else
+  echo "bootstrapped succeeded, powering off"
+  # poweroff after the bootstrap
+  ${SYSTEMCTL} poweroff
+fi
