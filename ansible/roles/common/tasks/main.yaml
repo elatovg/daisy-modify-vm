@@ -1,0 +1,12 @@
+---
+- name: common | set distro-specific variables
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "{{ ansible_distribution }}.yaml"
+    - default.yaml
+  
+- name: Install common packages
+  ansible.builtin.package:
+    name: "{{ item }}"
+    state: latest
+  with_items: "{{ pkgs }}"

@@ -1,0 +1,8 @@
+pkgs:
+  - zsh
+  - rsync
+  - htop
+  - tree
+  - tmux
+gcp_pkgs:
+  - kubectl

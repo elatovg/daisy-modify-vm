@@ -1,0 +1,18 @@
+steps:
+- id: 'Run-Daisy'
+  name: 'gcr.io/compute-image-tools/daisy:release'
+  dir: 'daisy'
+  args: ['-var:startupScript=${_STARTUP_SCRIPT}',
+        '-var:baseImage=${_BASE_IMAGE}',
+        '-var:builtImageName=${_BUILT_IMAGE_PREFIX}-$SHORT_SHA',
+        '-var:ansibleGitRepo=${_ANSIBLE_GIT_REPO}',
+        'image-wf.json'
+        ]
+
+substitutions:
+  _STARTUP_SCRIPT: custom.bash # default value
+  _BASE_IMAGE: projects/debian-cloud/global/images/family/debian-11 # default value
+  _BUILT_IMAGE_PREFIX: custom-debian # default value
+  _DAISY_WORKFLOW: image-wf.json # default value
+  _ANSIBLE_GIT_REPO: https://github.com/elatovg/daisy-modify-vm # default value
+
