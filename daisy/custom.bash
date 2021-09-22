@@ -21,7 +21,7 @@ fi
 
 ## CONFIGS
 DATA_DIR="/data"
-ANSIBLE_DIR="${DATA_DIR}/ansible"
+ANSIBLE_DIR="${DATA_DIR}/ansible-repo"
 ANS_ETC_DIR="/etc/ansible"
 VM_NAME=$(${CURL} -H Metadata-Flavor:Google \
   http://metadata/computeMetadata/v1/instance/hostname | ${CUT} -d. -f1)
@@ -74,11 +74,11 @@ function run_ansible() {
   ${MKDIR} -p ${ANS_ETC_DIR}
   # ${MV} "${ANS_ETC_DIR}/hosts" "${ANS_ETC_DIR}/hosts.bak"
   # ${MV} "${ANS_ETC_DIR}/roles" "${ANS_ETC_DIR}/roles.bak"
-  ${LN} -s ${ANSIBLE_DIR}/roles/ ${ANS_ETC_DIR}/roles
-  ${LN} -s ${ANSIBLE_DIR}/hosts ${ANS_ETC_DIR}/hosts
+  ${LN} -s ${ANSIBLE_DIR}/ansible/roles/ ${ANS_ETC_DIR}/roles
+  ${LN} -s ${ANSIBLE_DIR}/ansible/hosts ${ANS_ETC_DIR}/hosts
   # ${ANSIBLE_PLAYBOOK} "${ANSIBLE_DIR}/playbooks/gce.yaml"
 
-  if ! ${ANSIBLE_PLAYBOOK} "${ANSIBLE_DIR}/playbooks/gce.yaml"; then
+  if ! ${ANSIBLE_PLAYBOOK} "${ANSIBLE_DIR}/ansible/playbooks/gce.yaml"; then
     echo "bootstrapped failed"
     return 1
   else
@@ -94,6 +94,7 @@ ${APT} upgrade -y
 get_ansible
 if ! run_ansible; then
     echo "bootstrapped failed, not powering off for troubleshooting"
+    exit 1
 else
   echo "bootstrapped succeeded, powering off"
   # poweroff after the bootstrap
